@@ -38,11 +38,25 @@ std::optional<Event> EventStore::get_by_id(int id) const {
 
 // ─── Serialización JSON ───────────────────────────────────────────────────────
 
+// Función helper para escapar strings JSON
+static std::string json_escape(const std::string& s) {
+    std::string out;
+    for (char c : s) {
+        if (c == '"')  out += "\\\"";
+        else if (c == '\\') out += "\\\\";
+        else if (c == '\n') out += "\\n";
+        else if (c == '\r') out += "\\r";
+        else if (c == '\t') out += "\\t";
+        else out += c;
+    }
+    return out;
+}
+
 std::string EventStore::to_json(const Event& event) {
     return "{"
            "\"id\":" + std::to_string(event.id) + ","
-           "\"type\":\"" + event.type + "\","
-           "\"payload\":\"" + event.payload + "\","
+           "\"type\":\"" + json_escape(event.type) + "\","
+           "\"payload\":\"" + json_escape(event.payload) + "\","
            "\"timestamp\":\"" + event.timestamp + "\""
            "}";
 }

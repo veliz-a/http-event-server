@@ -38,6 +38,7 @@ flowchart TD
     A --> B --> C --> D --> D2 --> E --> F --> G --> H
 ```
 
+
 Each layer has a single responsibility. No layer knows the internal details of another.
 
 ---

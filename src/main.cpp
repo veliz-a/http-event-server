@@ -5,7 +5,7 @@
 
 int main() {
     EventStore store;
-    Server server(8080, 4);
+    Server server(8080, 8);
 
     // GET /events — retorna todos los eventos
     server.add_route("GET", "/events", [&store](const HttpRequest&) {

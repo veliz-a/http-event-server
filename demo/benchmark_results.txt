@@ -1,0 +1,21 @@
+=== BENCHMARK — servidor HTTP/1.1 concurrente en C++17 ===
+Entorno: WSL2, Ubuntu 24.04, GCC 13, pool de 4 threads
+Herramienta: wrk — 4 threads, 10 conexiones, 30 segundos
+
+┌─────────────┬────────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┐
+│ Operación   │  Req/seg   │ Avg      │ Stdev    │   p50    │   p75    │   p90    │   p99    │
+├─────────────┼────────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+│ GET  (ej.1) │  66,266    │  84 µs   │  37 µs   │  78 µs   │  93 µs   │ 119 µs   │ 215 µs   │
+│ GET  (ej.2) │  62,635    │  90 µs   │  36 µs   │  83 µs   │ 100 µs   │ 124 µs   │ 229 µs   │
+├─────────────┼────────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+│ POST (ej.1) │  63,592    │ 184 µs   │   2 ms   │  81 µs   │  99 µs   │ 130 µs   │ 244 µs   │
+│ POST (ej.2) │  61,249    │ 518 µs   │   7 ms   │  86 µs   │ 105 µs   │ 134 µs   │ 254 µs   │
+└─────────────┴────────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
+
+Hallazgo principal:
+  GET  p99 ≈ 215–229 µs  →  std::shared_lock  (lectores concurrentes)
+  POST p99 ≈ 244–254 µs  →  std::unique_lock  (escritura exclusiva)
+
+  La diferencia en p99 es atribuible al tipo de bloqueo, no al volumen de datos.
+  Los percentiles p50–p90 son estables entre ejecuciones (variación < 10 µs).
+  El promedio POST varía por eventos de cola larga esporádicos (max 180 ms ej.2).

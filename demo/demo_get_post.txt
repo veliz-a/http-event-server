@@ -1,0 +1,19 @@
+cd ~/projects/http-event-server
+./build/http-event-server
+
+# 1. Registrar evento login
+curl -s -X POST http://localhost:8080/events \
+  -H "Content-Type: application/json" \
+  -d '{"type":"login","user":"demo"}' | cat
+
+  # 2. Registrar segundo evento
+curl -s -X POST http://localhost:8080/events \
+  -H "Content-Type: application/json" \
+  -d '{"type":"action","user":"demo"}' | cat
+
+
+  # 3. Listar todos los eventos
+curl -s http://localhost:8080/events | cat
+
+# 4. Buscar evento específico
+curl -s http://localhost:8080/events/1 | cat
